@@ -1,0 +1,60 @@
+#!/bin/bash
+#Brett Gagnon
+#Shell Scripting Assignment 2
+#3/13/2020
+
+for Arg1 in $@
+do
+	#Account for special cases of leading or following colons here
+	if [ $Arg1 == ":" ]
+		then
+			P="."
+		else
+			if [[ $Arg1 == :* ]]
+				then
+					P=".$Arg1"
+				else
+					if [[ $Arg1 == *: ]]
+						then
+							P="$Arg1."
+						else
+							P=$Arg1 
+					fi
+			fi
+	fi
+	
+	#List before repeated args are removed
+	NP="$NP$P:"
+	
+done
+
+#Check for double colon, if present, replace with :.:
+NP="${NP/::/:.:}"
+
+
+#Check for repeated arguments and remove them
+for P2 in `echo $NP | sed 's/:/\\n/g'`
+do
+
+	Repeat=0
+
+	for NP2 in `echo $NewList | sed 's/:/\\n/g'`
+	do			
+		if [ $P2 != $NP2 ] && [ $Repeat == 0 ]
+			then
+				Repeat=0
+			else
+				Repeat=1
+		fi
+	done
+	
+	if [ $Repeat == 0 ]
+		then
+			NewList="$NewList$P2:"
+			#echo $NewList
+	fi
+done
+
+#Print the final concatenated list with duplicates removed
+FinalList=`echo $NewList | sed 's/:\+$//'`
+echo $FinalList
